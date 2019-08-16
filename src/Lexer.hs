@@ -9,23 +9,26 @@ import Data.List.Split
 import Text.Read 
 import qualified Data.Text as T
 
-data Token = Key | Sep | ROp | Op | Com | Id | Int | Float | Cha | Str | None
+data Token = As | Cast | Key | Sep | ROp | Op | Com | Id | Int | Float | Cha | Str 
      deriving (Show, Eq)
 
 lexseperators :: String 
 lexseperators = " =+-/&|^<>:"
 
 normseperators :: String 
-normseperators = "(){};"
+normseperators = "[](){};"
 
 seperators :: [T.Text]
-seperators = map T.pack ["(", ")", "{", "}", ";"]
+seperators = map T.pack [":", "[", "]", "(", ")", "{", "}", ";"]
 
-keywords :: [T.Text]
-keywords = map T.pack ["short", "long", "signed", "int", "float", "double", 
-    "unsigned", "volitile", "struct", "union", "void", "auto", "char", "enum",
-    "register", "static", "return", "for", "while", "if", "do", "switch",
-    "case", "break", "default", "continue", "else", ":"]
+keys :: [T.Text]
+keys = map T.pack ["for", "return", "while", "if", "do", "switch", "case", "break", "default", "continue", "else", "struct", "union", "enum", "typedef"]
+
+casts :: [T.Text]
+casts = map T.pack ["short", "long", "signed", "int", "float", "double", 
+    "unsigned", "volitile", "void", "auto", "char",
+    "register", "static"
+    ]
 
 operators :: [T.Text]
 operators = map T.pack ["+", "-", "/", "*", "sizeof", "++", "--", "?"]
@@ -38,9 +41,12 @@ rOperators = map T.pack
 comments :: [T.Text] 
 comments = map T.pack ["/*", "*/"]
 
+asignments :: [T.Text]
+asignments = map T.pack ["=", "+=", "/=", "-=", "*=", "%="]
+
 tokenAssoc :: [(Token, [T.Text])]
-tokenAssoc = [(Sep, seperators), (Key, keywords), (Op, operators), 
-        (ROp, rOperators), (Com, comments)]
+tokenAssoc = [(As, asignments), (Sep, seperators), (Key, keys), (Op, operators), 
+        (ROp, rOperators), (Com, comments), (Cast, casts)]
 
 isInt :: String -> Bool
 isInt str = isJust $ (readMaybe str :: Maybe Int)
